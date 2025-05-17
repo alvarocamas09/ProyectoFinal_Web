@@ -38,9 +38,21 @@ let wallPreview = [];
 let wallPreviewActive = false;
 let wallTimer = 0;
 let wallPreviewStep = 0;
-const WALL_PREVIEW_STEPS = 15; // Más pasos para que el parpadeo sea más lento y visible
-const WALL_PREVIEW_DURATION = 1000; // Duración total del preview en ms
-const WALL_APPEAR_INTERVAL = 10; // segundos
+const WALL_PREVIEW_STEPS = 15;
+const WALL_PREVIEW_DURATION = 1000;
+let wallAppearInterval = 10;
+const WALL_APPEAR_INTERVAL_MIN = 3;
+
+// --- Cantidad dinámica de paredes ---
+let wallsPerWave = 1;
+const WALLS_PER_WAVE_MAX = 4;
+
+// --- Velocidad dinámica ---
+let gameSpeed = 15; // FPS inicial
+const GAME_SPEED_MAX = 25;
+const GAME_SPEED_MIN = 8;
+const GAME_SPEED_STEP = (GAME_SPEED_MAX - GAME_SPEED_MIN) / 30;
+let gameLoopDelay = 1000 / gameSpeed;
 
 // --- Funciones de UI ---
 function showMenu() {
@@ -56,7 +68,10 @@ function startGame() {
     gameOverScreen.style.display = 'none';
     resetGame();
     gameRunning = true;
-    gameInterval = setInterval(gameLoop, 1000 / 15); // 15 FPS
+    gameSpeed = GAME_SPEED_MIN;
+    wallAppearInterval = 10;
+    gameLoopDelay = 1000 / gameSpeed;
+    gameInterval = setTimeout(gameLoop, gameLoopDelay);
     timerInterval = setInterval(updateTimer, 1000);
 }
 
@@ -97,6 +112,10 @@ function resetGame() {
     wallPreviewActive = false;
     wallTimer = 0;
     wallPreviewStep = 0;
+    gameSpeed = GAME_SPEED_MIN;
+    wallAppearInterval = 10;
+    gameLoopDelay = 1000 / gameSpeed;
+    wallsPerWave = 1;
 }
 
 function placeFood() {
@@ -110,19 +129,35 @@ function placeFood() {
 
 // --- Lógica de paredes ---
 function updateWalls() {
-    // Cada segundo, wallTimer++
     wallTimer++;
-    if (wallTimer === WALL_APPEAR_INTERVAL - 2) {
-        // 2 segundos antes, genera previsualización
-        wallPreview = generateWallPositions();
+    if (wallTimer === wallAppearInterval - 2) {
+        // Genera varias previews según wallsPerWave
+        wallPreview = [];
+        let attempts = 0;
+        while (wallPreview.length < wallsPerWave && attempts < 20) {
+            let candidate = generateWallPositions();
+            // Evita superposición con otras previews
+            if (candidate.length > 0 && !candidate.some(c => wallPreview.some(w => w.x === c.x && w.y === c.y))) {
+                wallPreview = wallPreview.concat(candidate);
+            }
+            attempts++;
+        }
         wallPreviewActive = true;
         wallPreviewStep = 0;
-        // Inicia animación de preview más lenta
         previewWallAnimation();
     }
-    if (!wallPreviewActive && wallTimer >= WALL_APPEAR_INTERVAL) {
-        // Seguridad: si no hubo preview, genera y aparece
-        walls = generateWallPositions();
+    if (!wallPreviewActive && wallTimer >= wallAppearInterval) {
+        // Genera varias paredes reales según wallsPerWave
+        let newWalls = [];
+        let attempts = 0;
+        while (newWalls.length < wallsPerWave && attempts < 20) {
+            let candidate = generateWallPositions();
+            if (candidate.length > 0 && !candidate.some(c => newWalls.some(w => w.x === c.x && w.y === c.y))) {
+                newWalls = newWalls.concat(candidate);
+            }
+            attempts++;
+        }
+        walls = newWalls;
         wallTimer = 0;
     }
 }
@@ -131,7 +166,6 @@ function previewWallAnimation() {
     if (!wallPreviewActive) return;
     wallPreviewStep++;
     if (wallPreviewStep >= WALL_PREVIEW_STEPS) {
-        // Aparecen las paredes
         walls = wallPreview;
         wallPreview = [];
         wallPreviewActive = false;
@@ -142,36 +176,61 @@ function previewWallAnimation() {
     setTimeout(previewWallAnimation, WALL_PREVIEW_DURATION / WALL_PREVIEW_STEPS);
 }
 
+// Genera paredes de diferentes formas (L, T, I, etc.)
 function generateWallPositions() {
-    // Genera una pared de mínimo 2 celdas, nunca en bordes, nunca encierra completamente, nunca sobre la serpiente o comida
-    // Solo horizontal o vertical, aleatorio
     let valid = false;
     let wall = [];
     let maxAttempts = 50;
     while (!valid && maxAttempts-- > 0) {
         wall = [];
-        const orientation = Math.random() < 0.5 ? 'H' : 'V';
-        const length = 2 + Math.floor(Math.random() * 3); // 2 a 4 celdas
-        let x, y;
-        if (orientation === 'H') {
-            y = 1 + Math.floor(Math.random() * (tileCountY - 2));
-            x = 1 + Math.floor(Math.random() * (tileCountX - length - 1));
-            for (let i = 0; i < length; i++) wall.push({ x: x + i, y });
-        } else {
-            x = 1 + Math.floor(Math.random() * (tileCountX - 2));
-            y = 1 + Math.floor(Math.random() * (tileCountY - length - 1));
-            for (let i = 0; i < length; i++) wall.push({ x, y: y + i });
+        const shapeType = Math.floor(Math.random() * 4); // 0: I, 1: L, 2: T, 3: Z
+        let x, y, length;
+        switch (shapeType) {
+            case 0: // I (horizontal o vertical)
+                if (Math.random() < 0.5) {
+                    // Horizontal
+                    length = 2 + Math.floor(Math.random() * 5); // 2-6
+                    y = 1 + Math.floor(Math.random() * (tileCountY - 2));
+                    x = 1 + Math.floor(Math.random() * (tileCountX - length - 1));
+                    for (let i = 0; i < length; i++) wall.push({ x: x + i, y });
+                } else {
+                    // Vertical
+                    length = 2 + Math.floor(Math.random() * 5);
+                    x = 1 + Math.floor(Math.random() * (tileCountX - 2));
+                    y = 1 + Math.floor(Math.random() * (tileCountY - length - 1));
+                    for (let i = 0; i < length; i++) wall.push({ x, y: y + i });
+                }
+                break;
+            case 1: // L
+                length = 2 + Math.floor(Math.random() * 3); // 2-4
+                x = 1 + Math.floor(Math.random() * (tileCountX - length - 2));
+                y = 1 + Math.floor(Math.random() * (tileCountY - length - 2));
+                for (let i = 0; i < length; i++) wall.push({ x: x + i, y });
+                for (let i = 1; i < length; i++) wall.push({ x, y: y + i });
+                break;
+            case 2: // T
+                length = 2 + Math.floor(Math.random() * 3); // 2-4
+                x = 2 + Math.floor(Math.random() * (tileCountX - length - 3));
+                y = 2 + Math.floor(Math.random() * (tileCountY - 3));
+                for (let i = 0; i < length; i++) wall.push({ x: x + i, y });
+                wall.push({ x: x + Math.floor(length / 2), y: y + 1 });
+                wall.push({ x: x + Math.floor(length / 2), y: y + 2 });
+                break;
+            case 3: // Z
+                length = 2 + Math.floor(Math.random() * 3); // 2-4
+                x = 1 + Math.floor(Math.random() * (tileCountX - length - 2));
+                y = 1 + Math.floor(Math.random() * (tileCountY - length - 2));
+                for (let i = 0; i < length; i++) wall.push({ x: x + i, y });
+                for (let i = 0; i < length; i++) wall.push({ x: x + 1 + i, y: y + 1 });
+                break;
         }
-        // No sobreponer con serpiente, comida, ni tocar bordes
         valid = wall.every(cell =>
             cell.x > 0 && cell.x < tileCountX - 1 &&
             cell.y > 0 && cell.y < tileCountY - 1 &&
             !snake.some(seg => seg.x === cell.x && seg.y === cell.y) &&
             !(food.x === cell.x && food.y === cell.y)
         );
-        // No encerrar completamente: debe haber al menos un camino horizontal o vertical libre
         if (valid) {
-            // Simple check: hay al menos una fila y columna sin pared
             let rowFree = false, colFree = false;
             for (let i = 1; i < tileCountY - 1; i++) {
                 if (!wall.some(cell => cell.y === i)) rowFree = true;
@@ -189,16 +248,12 @@ function generateWallPositions() {
 function gameLoop() {
     if (!gameRunning) return;
 
-    // --- Paredes dinámicas ---
     updateWalls();
 
-    // Actualiza dirección
     direction = { ...nextDirection };
 
-    // Calcula nueva cabeza
     const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
-    // Colisión con paredes
     if (
         head.x < 0 || head.x >= tileCountX ||
         head.y < 0 || head.y >= tileCountY ||
@@ -208,42 +263,54 @@ function gameLoop() {
         return;
     }
 
-    // Colisión con sí mismo
     if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
         showGameOver();
         return;
     }
 
-    // Añade nueva cabeza
     snake.unshift(head);
 
-    // Comer comida
     if (head.x === food.x && head.y === food.y) {
         score += 10;
         scoreSpan.textContent = score;
         placeFood();
-        // Efecto de flash blanco
         flashBg = true;
         if (flashTimeout) clearTimeout(flashTimeout);
         flashTimeout = setTimeout(() => {
             flashBg = false;
         }, 80);
-        // Aquí puedes agregar efecto de partículas o sonido
     } else {
-        // Quita la cola
         snake.pop();
     }
 
-    // Dibuja todo
     drawGame();
+
+    // --- Control de velocidad dinámica ---
+    let t = Math.min(seconds, 30);
+    let newSpeed = GAME_SPEED_MIN + GAME_SPEED_STEP * t;
+    newSpeed = Math.max(GAME_SPEED_MIN, Math.min(newSpeed, GAME_SPEED_MAX));
+    if (Math.abs(newSpeed - gameSpeed) > 0.01) {
+        gameSpeed = newSpeed;
+        gameLoopDelay = 1000 / gameSpeed;
+    }
+
+    // --- Control de cantidad de paredes dinámica ---
+    // En 30 segundos se llega al máximo de paredes por oleada
+    let newWallsPerWave = Math.floor(1 + (WALLS_PER_WAVE_MAX - 1) * (t / 30));
+    if (newWallsPerWave !== wallsPerWave) {
+        wallsPerWave = newWallsPerWave;
+    }
+
+    if (gameRunning) {
+        gameInterval = setTimeout(gameLoop, gameLoopDelay);
+    }
 }
 
 function drawGame() {
-    // Fondo: blanco si flashBg, si no negro
     ctx.fillStyle = flashBg ? "#fff" : "#111";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Dibuja preview de paredes (parpadeo)
+    // Dibuja preview de paredes (parpadeo, azul claro)
     if (wallPreviewActive && wallPreview.length > 0) {
         let alpha = wallPreviewStep / WALL_PREVIEW_STEPS;
         wallPreview.forEach(cell => {
@@ -255,19 +322,21 @@ function drawGame() {
         });
     }
 
-    // Dibuja paredes reales
+    // Dibuja paredes reales (azul opaco)
     if (walls.length > 0) {
+        let wallAlpha = 0.7 + 0.3 * Math.min(wallTimer / 2, 1);
         walls.forEach(cell => {
-            ctx.fillStyle = "#607d8b";
+            ctx.save();
+            ctx.globalAlpha = wallAlpha;
+            ctx.fillStyle = "#2196f3";
             ctx.fillRect(cell.x * gridSize, cell.y * gridSize, gridSize, gridSize);
+            ctx.restore();
         });
     }
 
-    // Dibuja comida
     ctx.fillStyle = "#e53935";
     ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 
-    // Dibuja serpiente (cabeza diferente)
     snake.forEach((segment, idx) => {
         ctx.fillStyle = idx === 0 ? "#ffd600" : "#4caf50";
         ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
