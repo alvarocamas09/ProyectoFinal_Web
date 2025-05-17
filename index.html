@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Snake Game - Proyecto Final</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Menu -->
+    <div id="main-menu" class="fullscreen">
+        <h1>Snake Game</h1>
+        <button id="start-btn">Start</button>
+        <p class="subtitle">Práctica Final - Diseño Web Avanzado</p>
+    </div>
+
+    <!-- Game UI -->
+    <div id="game-ui" class="fullscreen" style="display:none;">
+        <div id="hud">
+            <span id="score-label">Puntuación: <span id="score">0</span></span>
+            <span id="timer-label">Tiempo: <span id="timer">00:00</span></span>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+        </div>
+        <canvas id="game-canvas" width="640" height="480"></canvas>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over" class="fullscreen" style="display:none;">
+        <h2>Game Over</h2>
+        <p>Tu puntuación: <span id="final-score">0</span></p>
+        <button id="restart-btn">Reintentar</button>
+        <button id="menu-btn">Menú Principal</button>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
