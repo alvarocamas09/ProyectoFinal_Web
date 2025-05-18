@@ -82,6 +82,12 @@ function showGameOver() {
     finalScoreSpan.textContent = score;
     gameOverScreen.style.display = 'flex';
     gameUI.style.display = 'none';
+    // Reset formulario
+    scoreForm.style.display = "flex";
+    scoreSavedMsg.style.display = "none";
+    playerNameInput.value = "";
+    playerNameInput.focus();
+    lastScoreSaved = false;
 }
 
 function stopGame() {
@@ -378,5 +384,83 @@ startBtn.addEventListener('click', startGame);
 restartBtn && restartBtn.addEventListener('click', startGame);
 menuBtn && menuBtn.addEventListener('click', showMenu);
 
-// Mostrar menú al cargar
-showMenu();
+// Firebase imports y config
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCQ6uoBFY6gcx9EUnf3Nil2fNidBevUgIE",
+    authDomain: "snake-web-b8c54.firebaseapp.com",
+    projectId: "snake-web-b8c54",
+    storageBucket: "snake-web-b8c54.firebasestorage.app",
+    messagingSenderId: "95897994781",
+    appId: "1:95897994781:web:af6232fee9ab4efd60a8f4"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --- DOM para ranking y formulario ---
+const rankingBtn = document.getElementById('ranking-btn');
+const rankingModal = document.getElementById('ranking-modal');
+const rankingList = document.getElementById('ranking-list');
+const closeRankingBtn = document.getElementById('close-ranking-btn');
+const scoreForm = document.getElementById('score-form');
+const playerNameInput = document.getElementById('player-name');
+const scoreSavedMsg = document.getElementById('score-saved-msg');
+
+let lastScoreSaved = false;
+
+// --- Guardar puntuación en Firestore ---
+async function saveScore(name, score, time) {
+    try {
+        await addDoc(collection(db, "scores"), {
+            name: name.trim().substring(0, 16),
+            score: score,
+            time: time,
+            date: new Date().toISOString()
+        });
+        scoreSavedMsg.style.display = "block";
+        lastScoreSaved = true;
+    } catch (e) {
+        alert("Error al guardar puntuación");
+    }
+}
+
+// --- Mostrar ranking (Top 20) ---
+function showRankingModal() {
+    rankingModal.style.display = 'flex';
+}
+function hideRankingModal() {
+    rankingModal.style.display = 'none';
+}
+
+// --- Actualización automática del ranking ---
+function listenRanking() {
+    const q = query(collection(db, "scores"), orderBy("score", "desc"), orderBy("time", "asc"), limit(20));
+    onSnapshot(q, (snapshot) => {
+        rankingList.innerHTML = "";
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            const mins = Math.floor(d.time / 60);
+            const secs = d.time % 60;
+            const tstr = `${mins}:${secs.toString().padStart(2, '0')}`;
+            rankingList.innerHTML += `<li><b>${d.name}</b> — ${d.score} pts — ${tstr}</li>`;
+        });
+    });
+}
+listenRanking();
+
+// --- Eventos de ranking ---
+rankingBtn.addEventListener('click', showRankingModal);
+closeRankingBtn.addEventListener('click', hideRankingModal);
+
+// --- Guardar puntuación al enviar el formulario ---
+scoreForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (lastScoreSaved) return;
+    const name = playerNameInput.value.trim();
+    if (!name) return;
+    await saveScore(name, score, seconds);
+    scoreForm.style.display = "none";
+    scoreSavedMsg.style.display = "block";
+});

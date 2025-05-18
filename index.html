@@ -11,6 +11,7 @@
     <div id="main-menu" class="fullscreen">
         <h1>Snake Game</h1>
         <button id="start-btn">Start</button>
+        <button id="ranking-btn">Ranking</button>
         <p class="subtitle">Práctica Final - Diseño Web Avanzado</p>
     </div>
 
@@ -30,10 +31,24 @@
     <div id="game-over" class="fullscreen" style="display:none;">
         <h2>Game Over</h2>
         <p>Tu puntuación: <span id="final-score">0</span></p>
+        <form id="score-form">
+            <input id="player-name" type="text" maxlength="16" placeholder="Tu nombre" required autocomplete="off" />
+            <button type="submit">Guardar puntuación</button>
+        </form>
+        <div id="score-saved-msg" style="display:none; color:#4caf50; margin-top:8px;">¡Puntuación guardada!</div>
         <button id="restart-btn">Reintentar</button>
         <button id="menu-btn">Menú Principal</button>
     </div>
 
-    <script src="game.js"></script>
+    <!-- Ranking Modal -->
+    <div id="ranking-modal" class="fullscreen" style="display:none; background:rgba(24,24,24,0.98); z-index:20;">
+        <div style="background:#232526; border-radius:12px; padding:2em; min-width:320px;">
+            <h2>Ranking Top 20</h2>
+            <ol id="ranking-list" style="text-align:left; max-height:350px; overflow-y:auto;"></ol>
+            <button id="close-ranking-btn">Cerrar</button>
+        </div>
+    </div>
+
+    <script type="module" src="game.js"></script>
 </body>
 </html>
