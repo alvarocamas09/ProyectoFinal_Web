@@ -1,9 +1,9 @@
-// Puedes reemplazar los URLs por tus propios archivos de sonido/música
-let eatSound = new Audio('eat.mp3');
-let gameOverSound = new Audio('gameover.mp3');
-let menuMusic = new Audio('menu.mp3');
-let gameMusic = new Audio('game.mp3');
-let gameOverMusic = new Audio('gameover-music.mp3');
+let eatSound = new Audio('audio_snake/eat.mp3');
+let gameOverSound = new Audio('audio_snake/gameover.wav');
+let menuMusic = new Audio('audio_snake/menu.mp3');
+let gameMusic = new Audio('audio_snake/game.mp3');
+let gameOverMusic = new Audio('audio_snake/gameover-music.mp3');
+let startSound = new Audio('audio_snake/start.mp3');
 
 menuMusic.loop = true;
 gameMusic.loop = true;
@@ -31,6 +31,10 @@ export function playGameOverMusic() {
     stopAllMusic();
     gameOverMusic.currentTime = 0;
     gameOverMusic.play();
+}
+export function playStartSound() {
+    startSound.currentTime = 0;
+    startSound.play();
 }
 function stopAllMusic() {
     menuMusic.pause();
