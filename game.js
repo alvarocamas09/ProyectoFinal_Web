@@ -435,8 +435,13 @@ function hideRankingModal() {
 }
 
 // --- Actualización automática del ranking ---
+// Cambia el orden del query: primero por score descendente, luego por time ASC, pero Firestore requiere un índice compuesto.
+// Si ves el error "The query requires an index", entra al enlace que te da el error en consola y créalo.
+// Mientras tanto, puedes mostrar el ranking solo por score descendente (sin time) para que funcione sin índice:
+
 function listenRanking() {
-    const q = query(collection(db, "scores"), orderBy("score", "desc"), orderBy("time", "asc"), limit(20));
+    // Usa solo orderBy("score", "desc") para evitar el error de índice compuesto
+    const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(20));
     onSnapshot(q, (snapshot) => {
         rankingList.innerHTML = "";
         snapshot.forEach(doc => {

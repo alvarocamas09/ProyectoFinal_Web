@@ -119,9 +119,15 @@ button:hover {
 }
 
 #ranking-modal {
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
 }
+
+#ranking-modal > div {
+    margin: auto;
+    /* Opcional: para asegurar centrado vertical y horizontal */
+}
+
 #ranking-modal h2 {
     margin-top: 0;
     text-align: center;
