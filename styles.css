@@ -1,11 +1,15 @@
+/* --- FUENTE ARCADE --- */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 body, html {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #181818;
+    font-family: 'Press Start 2P', 'Segoe UI', Arial, sans-serif;
+    background: #0a0020;
     color: #fff;
+    letter-spacing: 1px;
 }
 
 .fullscreen {
@@ -17,39 +21,88 @@ body, html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    background: linear-gradient(135deg, #1a0033 0%, #0a0020 100%);
     z-index: 10;
 }
 
+#main-menu, #game-over, #ranking-modal > div {
+    box-shadow: 0 0 32px 8px #00fff7, 0 0 0 4px #ff00c8 inset;
+    border-radius: 18px;
+    border: 3px solid #00fff7;
+    background: linear-gradient(135deg, #1a0033 60%, #0a0020 100%);
+    padding: 2.5em 3em 2em 3em;
+    min-width: 340px;
+    max-width: 90vw;
+    text-align: center;
+}
+
 #main-menu h1 {
-    font-size: 3em;
+    font-size: 2.2em;
     margin-bottom: 0.5em;
+    color: #ffe600;
+    text-shadow: 0 0 8px #ffe600, 0 0 24px #ff00c8;
+    letter-spacing: 2px;
 }
 
 #main-menu .subtitle {
     margin-top: 2em;
-    font-size: 1.2em;
-    color: #aaa;
+    font-size: 1em;
+    color: #00fff7;
+    text-shadow: 0 0 6px #00fff7;
 }
 
 button {
-    padding: 1em 2em;
-    font-size: 1.2em;
+    padding: 1em 2.5em;
+    font-size: 1.1em;
     border: none;
-    border-radius: 8px;
-    background: #4caf50;
-    color: #fff;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #00fff7 0%, #ff00c8 100%);
+    color: #0a0020;
+    font-family: 'Press Start 2P', Arial, sans-serif;
     cursor: pointer;
-    margin: 0.5em;
-    transition: background 0.2s;
+    margin: 0.7em 0.5em;
+    box-shadow: 0 0 12px #00fff7, 0 0 0 #ff00c8;
+    transition: 
+        background 0.2s, 
+        color 0.2s, 
+        box-shadow 0.2s, 
+        transform 0.1s;
+    outline: 2px solid #ffe600;
+    outline-offset: 2px;
+    position: relative;
+    overflow: hidden;
+}
+button:before {
+    content: "";
+    position: absolute;
+    left: -50%;
+    top: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, #fff 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+button:hover:before {
+    opacity: 0.12;
 }
 button:hover {
-    background: #388e3c;
+    background: linear-gradient(90deg, #ffe600 0%, #00fff7 100%);
+    color: #ff00c8;
+    box-shadow: 0 0 24px #ffe600, 0 0 8px #00fff7;
+    transform: scale(1.06);
+}
+button:active {
+    background: linear-gradient(90deg, #ff00c8 0%, #00fff7 100%);
+    color: #ffe600;
+    box-shadow: 0 0 32px #ff00c8, 0 0 8px #00fff7;
+    transform: scale(0.97);
 }
 
 #game-ui {
     flex-direction: column;
-    background: #222;
+    background: transparent;
     z-index: 5;
 }
 
@@ -59,33 +112,42 @@ button:hover {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1em;
+    font-size: 1em;
+    color: #ffe600;
+    text-shadow: 0 0 6px #00fff7;
 }
 
 #progress-bar-container {
     width: 200px;
     height: 16px;
-    background: #444;
+    background: #222;
     border-radius: 8px;
     overflow: hidden;
     margin-left: 1em;
+    border: 2px solid #00fff7;
+    box-shadow: 0 0 8px #00fff7;
 }
 #progress-bar {
     width: 0%;
     height: 100%;
-    background: linear-gradient(90deg, #4caf50, #81c784);
+    background: linear-gradient(90deg, #ffe600 0%, #ff00c8 100%);
     transition: width 0.2s;
+    box-shadow: 0 0 8px #ffe600;
 }
 
 #game-canvas {
-    background: #111;
-    border: 2px solid #4caf50;
-    border-radius: 8px;
+    background: #0a0020;
+    border: 3px solid #00fff7;
+    border-radius: 12px;
     display: block;
+    box-shadow: 0 0 32px #00fff7, 0 0 0 #ff00c8;
 }
 
 #game-over h2 {
-    font-size: 2.5em;
+    font-size: 2em;
     margin-bottom: 0.5em;
+    color: #ff00c8;
+    text-shadow: 0 0 12px #ff00c8, 0 0 24px #ffe600;
 }
 
 #score-form {
@@ -100,37 +162,61 @@ button:hover {
     padding: 0.5em 1em;
     font-size: 1em;
     border-radius: 6px;
-    border: 1px solid #888;
+    border: 2px solid #00fff7;
     outline: none;
     min-width: 120px;
+    background: #181818;
+    color: #ffe600;
+    font-family: 'Press Start 2P', Arial, sans-serif;
+    box-shadow: 0 0 8px #00fff7;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+#score-form input[type="text"]:focus {
+    border: 2px solid #ffe600;
+    box-shadow: 0 0 16px #ffe600;
 }
 #score-form button[type="submit"] {
     padding: 0.5em 1.2em;
     font-size: 1em;
     border-radius: 6px;
     border: none;
-    background: #2196f3;
-    color: #fff;
+    background: linear-gradient(90deg, #00fff7 0%, #ff00c8 100%);
+    color: #0a0020;
+    font-family: 'Press Start 2P', Arial, sans-serif;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 8px #00fff7;
 }
 #score-form button[type="submit"]:hover {
-    background: #1565c0;
+    background: linear-gradient(90deg, #ffe600 0%, #00fff7 100%);
+    color: #ff00c8;
+    box-shadow: 0 0 16px #ffe600;
+}
+
+#score-saved-msg {
+    color: #00fff7 !important;
+    text-shadow: 0 0 8px #00fff7;
+    font-size: 1em;
 }
 
 #ranking-modal {
     align-items: center;
     justify-content: center;
+    background: rgba(10,0,32,0.98) !important;
 }
 
 #ranking-modal > div {
     margin: auto;
-    /* Opcional: para asegurar centrado vertical y horizontal */
+    border: 3px solid #ff00c8;
+    box-shadow: 0 0 32px #ff00c8, 0 0 0 #00fff7;
+    background: linear-gradient(135deg, #1a0033 60%, #0a0020 100%);
 }
 
 #ranking-modal h2 {
     margin-top: 0;
     text-align: center;
+    color: #00fff7;
+    text-shadow: 0 0 12px #00fff7, 0 0 24px #ffe600;
 }
 #ranking-list {
     padding-left: 1.5em;
@@ -139,7 +225,36 @@ button:hover {
 #ranking-list li {
     margin-bottom: 0.3em;
     font-size: 1.1em;
-    background: rgba(33,150,243,0.08);
+    background: rgba(0,255,247,0.10);
     border-radius: 4px;
     padding: 0.2em 0.5em;
+    color: #ffe600;
+    text-shadow: 0 0 6px #00fff7;
+    border-left: 4px solid #ff00c8;
+    border-right: 4px solid #00fff7;
+    transition: background 0.2s, color 0.2s;
+}
+#ranking-list li:nth-child(1) {
+    background: rgba(255,230,0,0.18);
+    color: #ff00c8;
+    font-weight: bold;
+    border-left: 4px solid #ffe600;
+    border-right: 4px solid #ffe600;
+}
+#ranking-list li:nth-child(2) {
+    background: rgba(0,255,247,0.18);
+    color: #00fff7;
+}
+#ranking-list li:nth-child(3) {
+    background: rgba(255,0,200,0.18);
+    color: #ffe600;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    background: #181818;
+}
+::-webkit-scrollbar-thumb {
+    background: #00fff7;
+    border-radius: 8px;
 }
