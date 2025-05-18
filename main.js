@@ -43,9 +43,6 @@ onGameOver(() => {
     setScoreForm(true);
 });
 
-// Ranking en tiempo real
-listenRanking();
-
 // Al cargar, muestra menú y música
 showMenu();
 playMenuMusic();

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "slow",
+    "shape": "circle",
+    "color": "#00bcd4",
+    "name": "Slow Motion",
+    "description": "La serpiente se mueve más despacio durante 5 segundos.",
+    "duration": 5,
+    "sound": "powerup_slow.mp3"
+  },
+  {
+    "id": "ghost",
+    "shape": "triangle",
+    "color": "#00ff90",
+    "name": "Ghost",
+    "description": "Puedes atravesar paredes durante 5 segundos.",
+    "duration": 5,
+    "sound": "powerup_ghost.mp3"
+  },
+  {
+    "id": "double",
+    "shape": "circle",
+    "color": "#ff1744",
+    "name": "Double Points",
+    "description": "Ganas el doble de puntos durante 5 segundos.",
+    "duration": 5,
+    "sound": "powerup_double.mp3"
+  }
+]
