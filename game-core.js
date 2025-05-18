@@ -53,6 +53,8 @@ export function startGame() {
     wallAppearInterval = 10;
     gameLoopDelay = 1000 / gameSpeed;
     gameInterval = setTimeout(gameLoop, gameLoopDelay);
+    // CORRECCIÓN: solo un timerInterval, no varios
+    if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(updateTimer, 1000);
 }
 
@@ -60,6 +62,7 @@ export function stopGame() {
     gameRunning = false;
     clearInterval(gameInterval);
     clearInterval(timerInterval);
+    timerInterval = null;
 }
 
 function resetGame() {
