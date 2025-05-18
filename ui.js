@@ -1,5 +1,14 @@
 let onStart, onMenu, onRanking, onRankingClose, onRestart, onScoreSubmit;
+let onSettings, onSettingsClose;
+let controlBinds = {
+    up: 'ArrowUp',
+    down: 'ArrowDown',
+    left: 'ArrowLeft',
+    right: 'ArrowRight'
+};
+let bindTarget = null;
 
+// --- NUEVO: Setup UI con settings ---
 export function setupUI(callbacks) {
     onStart = callbacks.onStart;
     onMenu = callbacks.onMenu;
@@ -7,19 +16,98 @@ export function setupUI(callbacks) {
     onRankingClose = callbacks.onRankingClose;
     onRestart = callbacks.onRestart;
     onScoreSubmit = callbacks.onScoreSubmit;
+    onSettings = callbacks.onSettings;
+    onSettingsClose = callbacks.onSettingsClose;
 
     document.getElementById('start-btn').onclick = onStart;
     document.getElementById('menu-btn').onclick = onMenu;
     document.getElementById('ranking-btn').onclick = onRanking;
     document.getElementById('close-ranking-btn').onclick = onRankingClose;
     document.getElementById('restart-btn').onclick = onRestart;
+    document.getElementById('settings-btn').onclick = onSettings;
+    document.getElementById('close-settings-btn').onclick = onSettingsClose;
 
     document.getElementById('score-form').onsubmit = (e) => {
         e.preventDefault();
         onScoreSubmit();
     };
+
+    // Volumen sliders
+    const musicSlider = document.getElementById('music-volume');
+    const effectsSlider = document.getElementById('effects-volume');
+    const musicValue = document.getElementById('music-volume-value');
+    const effectsValue = document.getElementById('effects-volume-value');
+    musicSlider.oninput = () => {
+        musicValue.textContent = Math.round(musicSlider.value * 100) + "%";
+        window.setMusicVolume && window.setMusicVolume(Number(musicSlider.value));
+    };
+    effectsSlider.oninput = () => {
+        effectsValue.textContent = Math.round(effectsSlider.value * 100) + "%";
+        window.setEffectsVolume && window.setEffectsVolume(Number(effectsSlider.value));
+    };
+
+    // Bindings
+    ['up', 'down', 'left', 'right'].forEach(dir => {
+        const btn = document.getElementById('bind-' + dir);
+        btn.textContent = getBindLabel(controlBinds[dir]);
+        btn.onclick = () => {
+            bindTarget = dir;
+            btn.classList.add('active');
+            window.addEventListener('keydown', bindKeyHandler);
+        };
+    });
+    document.getElementById('reset-binds-btn').onclick = () => {
+        controlBinds = {
+            up: 'ArrowUp',
+            down: 'ArrowDown',
+            left: 'ArrowLeft',
+            right: 'ArrowRight'
+        };
+        updateBindButtons();
+        if (window.onBindsChanged) window.onBindsChanged(controlBinds);
+    };
 }
 
+function bindKeyHandler(e) {
+    if (!bindTarget) return;
+    controlBinds[bindTarget] = e.key;
+    updateBindButtons();
+    if (window.onBindsChanged) window.onBindsChanged(controlBinds);
+    document.getElementById('bind-' + bindTarget).classList.remove('active');
+    bindTarget = null;
+    window.removeEventListener('keydown', bindKeyHandler);
+    // Feedback sonoro/visual
+    if (window.playStartSound) window.playStartSound();
+}
+
+function updateBindButtons() {
+    ['up', 'down', 'left', 'right'].forEach(dir => {
+        const btn = document.getElementById('bind-' + dir);
+        btn.textContent = getBindLabel(controlBinds[dir]);
+    });
+}
+
+function getBindLabel(key) {
+    if (key.startsWith('Arrow')) return { ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→' }[key] || key;
+    return key.length === 1 ? key.toUpperCase() : key;
+}
+
+// --- NUEVO: Mostrar/ocultar settings ---
+export function showSettings() {
+    document.getElementById('main-menu').style.display = 'none';
+    document.getElementById('settings-screen').style.display = 'flex';
+}
+export function hideSettings() {
+    document.getElementById('settings-screen').style.display = 'none';
+    document.getElementById('main-menu').style.display = 'flex';
+}
+
+// --- NUEVO: Obtener binds actuales ---
+export function getControlBinds() {
+    return { ...controlBinds };
+}
+
+// --- EXISTENTE: Mostrar/ocultar menú, juego y ranking ---
 export function showMenu() {
     document.getElementById('main-menu').style.display = 'flex';
     document.getElementById('game-ui').style.display = 'none';
@@ -47,6 +135,7 @@ export function hideRankingModal() {
     document.getElementById('ranking-modal').style.display = 'none';
 }
 
+// --- EXISTENTE: Configuración de puntajes y temporizador ---
 export function setFinalScore(score) {
     document.getElementById('final-score').textContent = score;
 }

@@ -9,6 +9,16 @@ menuMusic.loop = true;
 gameMusic.loop = true;
 gameOverMusic.loop = true;
 
+let musicVolume = 1;
+let effectsVolume = 1;
+
+menuMusic.volume = musicVolume;
+gameMusic.volume = musicVolume;
+gameOverMusic.volume = musicVolume;
+eatSound.volume = effectsVolume;
+gameOverSound.volume = effectsVolume;
+startSound.volume = effectsVolume;
+
 export function playEatSound() {
     eatSound.currentTime = 0;
     eatSound.play();
@@ -36,8 +46,23 @@ export function playStartSound() {
     startSound.currentTime = 0;
     startSound.play();
 }
+export function setMusicVolume(vol) {
+    musicVolume = vol;
+    menuMusic.volume = vol;
+    gameMusic.volume = vol;
+    gameOverMusic.volume = vol;
+}
+export function setEffectsVolume(vol) {
+    effectsVolume = vol;
+    eatSound.volume = vol;
+    gameOverSound.volume = vol;
+    startSound.volume = vol;
+}
 function stopAllMusic() {
     menuMusic.pause();
     gameMusic.pause();
     gameOverMusic.pause();
 }
+
+window.setMusicVolume = setMusicVolume;
+window.setEffectsVolume = setEffectsVolume;

@@ -258,3 +258,119 @@ button:active {
     background: #00fff7;
     border-radius: 8px;
 }
+
+#settings-screen {
+    z-index: 30;
+    background: linear-gradient(135deg, #1a0033 0%, #0a0020 100%);
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-panel {
+    background: linear-gradient(135deg, #1a0033 60%, #0a0020 100%);
+    border: 3px solid #00fff7;
+    border-radius: 18px;
+    box-shadow: 0 0 32px 8px #00fff7, 0 0 0 4px #ff00c8 inset;
+    padding: 2.5em 3em 2em 3em;
+    min-width: 340px;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.settings-panel h2 {
+    color: #ffe600;
+    text-shadow: 0 0 8px #ffe600, 0 0 24px #ff00c8;
+    margin-bottom: 1.5em;
+}
+
+.settings-group {
+    margin-bottom: 2em;
+}
+
+.settings-group label {
+    display: block;
+    font-size: 1em;
+    color: #00fff7;
+    margin-bottom: 0.5em;
+    text-shadow: 0 0 6px #00fff7;
+}
+
+input[type="range"] {
+    width: 180px;
+    accent-color: #ff00c8;
+    margin: 0 1em;
+    vertical-align: middle;
+}
+
+#music-volume-value, #effects-volume-value {
+    color: #ffe600;
+    font-size: 1em;
+    margin-left: 0.5em;
+    text-shadow: 0 0 6px #ffe600;
+}
+
+.controls-binds {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7em;
+    align-items: center;
+    margin-top: 0.5em;
+}
+.controls-binds div {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+.bind-btn {
+    font-family: 'Press Start 2P', Arial, sans-serif;
+    font-size: 1.1em;
+    padding: 0.5em 1.2em;
+    border-radius: 8px;
+    border: 2px solid #00fff7;
+    background: #181818;
+    color: #ffe600;
+    cursor: pointer;
+    box-shadow: 0 0 8px #00fff7;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.bind-btn.active, .bind-btn:focus {
+    background: #ffe600;
+    color: #0a0020;
+    border: 2px solid #ff00c8;
+    outline: none;
+}
+.bind-btn:hover {
+    background: #00fff7;
+    color: #ff00c8;
+    border: 2px solid #ffe600;
+}
+
+#reset-binds-btn {
+    background: linear-gradient(90deg, #ff00c8 0%, #00fff7 100%);
+    color: #0a0020;
+    border: none;
+    font-family: 'Press Start 2P', Arial, sans-serif;
+    font-size: 1em;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #ff00c8;
+    transition: background 0.2s, color 0.2s;
+}
+#reset-binds-btn:hover {
+    background: linear-gradient(90deg, #ffe600 0%, #00fff7 100%);
+    color: #ff00c8;
+}
+
+#close-settings-btn {
+    background: linear-gradient(90deg, #00fff7 0%, #ff00c8 100%);
+    color: #0a0020;
+    border: none;
+    font-family: 'Press Start 2P', Arial, sans-serif;
+    font-size: 1em;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #00fff7;
+    transition: background 0.2s, color 0.2s;
+}
+#close-settings-btn:hover {
+    background: linear-gradient(90deg, #ffe600 0%, #00fff7 100%);
+    color: #ff00c8;
+}

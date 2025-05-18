@@ -1,5 +1,6 @@
 import { setScore, setTimer, setProgressBar, drawGame, setFinalScore } from './ui.js';
 import { playEatSound } from './sound.js';
+import { getControlBinds } from './ui.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
@@ -291,21 +292,28 @@ function updateTimer() {
     const sec = String(seconds % 60).padStart(2, '0');
     setTimer(`${min}:${sec}`);
     setProgressBar(Math.min((seconds / 120) * 100, 100));
+    // Termina el juego automáticamente a los 120 segundos
+    if (seconds >= 120 && gameRunning && typeof gameOverCallback === "function") {
+        gameOverCallback();
+    }
 }
 
 document.addEventListener('keydown', (e) => {
     if (!gameRunning) return;
+    const binds = getControlBinds ? getControlBinds() : {
+        up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight'
+    };
     switch (e.key) {
-        case 'ArrowUp':
+        case binds.up:
             if (direction.y !== 1) nextDirection = { x: 0, y: -1 };
             break;
-        case 'ArrowDown':
+        case binds.down:
             if (direction.y !== -1) nextDirection = { x: 0, y: 1 };
             break;
-        case 'ArrowLeft':
+        case binds.left:
             if (direction.x !== 1) nextDirection = { x: -1, y: 0 };
             break;
-        case 'ArrowRight':
+        case binds.right:
             if (direction.x !== -1) nextDirection = { x: 1, y: 0 };
             break;
     }
