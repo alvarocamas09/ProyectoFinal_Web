@@ -10,6 +10,9 @@ body, html {
     background: #0a0020;
     color: #fff;
     letter-spacing: 1px;
+    /* Elimina cualquier borde, outline o box-shadow global */
+    box-shadow: none;
+    outline: none;
 }
 
 .fullscreen {
@@ -23,6 +26,8 @@ body, html {
     align-items: center;
     background: linear-gradient(135deg, #1a0033 0%, #0a0020 100%);
     z-index: 10;
+    /* Elimina cualquier box-shadow gigante que tape los bordes */
+    box-shadow: none;
 }
 
 #main-menu, #game-over, #ranking-modal > div {
